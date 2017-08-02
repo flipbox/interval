@@ -1,0 +1,22 @@
+{% import "_includes/forms" as forms %}
+
+{% namespace field.handle %}
+<div class="flex">
+    <div>
+        {{ forms.text({
+            id: 'amount',
+            name: 'amount',
+            value: amount,
+            size: 4,
+            class: 'amount'
+        }) }}
+    </div>
+    {{ forms.select({
+        id: 'period',
+        name: 'period',
+        options: periods,
+        value: period,
+        class: 'period'
+    }) }}
+</div>
+{% endnamespace %}
