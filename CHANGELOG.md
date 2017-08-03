@@ -4,6 +4,7 @@ All Notable changes to `flipboxdigital\interval` will be documented in this file
 ## Unreleased
 ### Changed
 - The default value behavior.  The field will always return a `\DateInterval` object
+- A required field value must not be equal to zero.
 
 ## 1.0.0-beta.1 - 2017-8-3
 ### Added
