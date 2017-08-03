@@ -31,7 +31,14 @@ class Interval extends Field implements PreviewableFieldInterface
      *
      * @var int
      */
-    public $default = 0;
+    public $defaultAmount = 0;
+
+    /**
+     * The default period
+     *
+     * @var int
+     */
+    public $defaultPeriod = PeriodType::Days;
 
     /**
      * @inheritdoc
@@ -62,13 +69,10 @@ class Interval extends Field implements PreviewableFieldInterface
         // Remove invert flag
         $value->invert = 0;
 
-        // This will put the value in the greatest denominator
-        $value = $this->toLargestDenominator($value);
-
         $amount = '';
         $period = '';
 
-        if ($humanInterval = DateTimeHelper::humanDurationFromInterval($value)) {
+        if (!$this->isFresh($element) && $humanInterval = $this->toHumanTimeDurationWithDefault($value)) {
             list($amount, $period) = explode(
                 ' ',
                 $humanInterval
@@ -149,7 +153,12 @@ class Interval extends Field implements PreviewableFieldInterface
             return $this->toDateIntervalFromHumanReadable($value);
         }
 
-        return DateTimeHelper::secondsToInterval($this->default);
+        // Fresh -> use default
+        if ($this->isFresh($element)) {
+            DateTimeHelper::secondsToInterval($this->defaultAmount);
+        }
+
+        return DateTimeHelper::secondsToInterval(0);
     }
 
     /**
@@ -160,9 +169,7 @@ class Interval extends Field implements PreviewableFieldInterface
     public function getTableAttributeHtml($value, ElementInterface $element): string
     {
         return StringHelper::toTitleCase(
-            DateTimeHelper::humanDurationFromInterval(
-                $this->toLargestDenominator($value)
-            )
+            $this->toHumanTimeDurationWithDefault($value)
         );
     }
 
@@ -176,6 +183,21 @@ class Interval extends Field implements PreviewableFieldInterface
             DateTimeHelper::secondsToHumanTimeDuration(
                 DateTimeHelper::intervalToSeconds($dateInterval)
             )
+        );
+    }
+
+    /**
+     * @param DateInterval $dateInterval
+     * @return string
+     */
+    private function toHumanTimeDurationWithDefault(DateInterval $dateInterval): string
+    {
+        if(DateTimeHelper::intervalToSeconds($dateInterval) === 0) {
+            return '0 '.$this->defaultPeriod;
+        }
+
+        return DateTimeHelper::humanDurationFromInterval(
+            $this->toLargestDenominator($dateInterval)
         );
     }
 
