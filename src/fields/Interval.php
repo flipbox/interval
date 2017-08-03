@@ -28,7 +28,7 @@ class Interval extends Field implements PreviewableFieldInterface
 
     /**
      * The default value
-     * 
+     *
      * @var int
      */
     public $default = 0;
@@ -68,7 +68,7 @@ class Interval extends Field implements PreviewableFieldInterface
         $amount = '';
         $period = '';
 
-        if($humanInterval = DateTimeHelper::humanDurationFromInterval($value)) {
+        if ($humanInterval = DateTimeHelper::humanDurationFromInterval($value)) {
             list($amount, $period) = explode(
                 ' ',
                 $humanInterval
@@ -107,13 +107,7 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     public function getStaticHtml($value, ElementInterface $element): string
     {
-        // Just return the input HTML with disabled inputs by default
-        Craft::$app->getView()->startJsBuffer();
-        $inputHtml = $this->getInputHtml($value, $element);
-        $inputHtml = preg_replace('/<(?:input|textarea|select)\s[^>]*/i', '$0 disabled', $inputHtml);
-        Craft::$app->getView()->clearJsBuffer();
-
-        return $inputHtml;
+        return $this->getTableAttributeHtml($value, $element);
     }
 
     /**
@@ -132,7 +126,7 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     public function getSearchKeywords($value, ElementInterface $element): string
     {
-        return DateTimeHelper::humanDurationFromInterval($value);
+        return $this->getTableAttributeHtml($value, $element);
     }
 
     /**
