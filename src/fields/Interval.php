@@ -174,6 +174,14 @@ class Interval extends Field implements PreviewableFieldInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isEmpty($value): bool
+    {
+        return parent::isEmpty($value) || DateTimeHelper::intervalToSeconds($value) === 0;
+    }
+
+    /**
      * @param DateInterval $dateInterval
      * @return DateInterval
      */
