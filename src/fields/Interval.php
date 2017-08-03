@@ -11,6 +11,7 @@ namespace flipbox\interval\fields;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\base\PreviewableFieldInterface;
 use craft\enums\PeriodType;
 use craft\helpers\ArrayHelper;
 use craft\helpers\DateTimeHelper;
@@ -22,9 +23,14 @@ use yii\db\Schema;
  * @author Flipbox Factory <hello@flipboxfactory.com>
  * @since 1.0.0
  */
-class Interval extends Field
+class Interval extends Field implements PreviewableFieldInterface
 {
 
+    /**
+     * The default value
+     * 
+     * @var int
+     */
     public $default = 0;
 
     /**
@@ -57,16 +63,17 @@ class Interval extends Field
         $value->invert = 0;
 
         // This will put the value in the greatest denominator
-        $value = DateInterval::createFromDateString(
-            DateTimeHelper::secondsToHumanTimeDuration(
-                DateTimeHelper::intervalToSeconds($value)
-            )
-        );
+        $value = $this->toLargestDenominator($value);
 
-        list($amount, $period) = explode(
-            ' ',
-            DateTimeHelper::humanDurationFromInterval($value)
-        );
+        $amount = '';
+        $period = '';
+
+        if($humanInterval = DateTimeHelper::humanDurationFromInterval($value)) {
+            list($amount, $period) = explode(
+                ' ',
+                $humanInterval
+            );
+        }
 
         // Ensure plural
         $period = StringHelper::removeRight($period, 's') . 's';
@@ -83,6 +90,7 @@ class Interval extends Field
                 'amount' => $amount,
                 'period' => $period,
                 'periods' => [
+                    '' => '',
                     PeriodType::Seconds => Craft::t('app', 'Seconds'),
                     PeriodType::Minutes => Craft::t('app', 'Minutes'),
                     PeriodType::Hours => Craft::t('app', 'Hours'),
@@ -148,6 +156,33 @@ class Interval extends Field
         }
 
         return DateTimeHelper::secondsToInterval($this->default);
+    }
+
+    /**
+     * @param mixed $value
+     * @param ElementInterface $element
+     * @return string
+     */
+    public function getTableAttributeHtml($value, ElementInterface $element): string
+    {
+        return StringHelper::toTitleCase(
+            DateTimeHelper::humanDurationFromInterval(
+                $this->toLargestDenominator($value)
+            )
+        );
+    }
+
+    /**
+     * @param DateInterval $dateInterval
+     * @return DateInterval
+     */
+    private function toLargestDenominator(DateInterval $dateInterval)
+    {
+        return DateInterval::createFromDateString(
+            DateTimeHelper::secondsToHumanTimeDuration(
+                DateTimeHelper::intervalToSeconds($dateInterval)
+            )
+        );
     }
 
     /**
