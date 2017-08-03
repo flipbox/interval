@@ -200,7 +200,7 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     private function toHumanTimeDurationWithDefault(DateInterval $dateInterval): string
     {
-        if(DateTimeHelper::intervalToSeconds($dateInterval) === 0) {
+        if (DateTimeHelper::intervalToSeconds($dateInterval) === 0) {
             return '0 '.$this->defaultPeriod;
         }
 
