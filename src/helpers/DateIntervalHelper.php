@@ -58,11 +58,10 @@ class DateIntervalHelper
 
     /**
      * @param int  $seconds     The number of seconds
-     * @param bool $showSeconds Whether to output seconds or not
      *
      * @return string
      */
-    public static function secondsToHumanTimeDuration(int $seconds, bool $showSeconds = true): string
+    public static function secondsToHumanTimeDuration(int $seconds): string
     {
         $secondsInYear = self::SECONDS_YEAR;
         $secondsInDay = self::SECONDS_DAY;
@@ -78,13 +77,8 @@ class DateIntervalHelper
         $hours = floor($seconds / $secondsInHour);
         $seconds %= $secondsInHour;
 
-        if ($showSeconds) {
-            $minutes = floor($seconds / $secondsInMinute);
-            $seconds %= $secondsInMinute;
-        } else {
-            $minutes = round($seconds / $secondsInMinute);
-            $seconds = 0;
-        }
+        $minutes = floor($seconds / $secondsInMinute);
+        $seconds %= $secondsInMinute;
 
         $timeComponents = [];
 
@@ -100,11 +94,11 @@ class DateIntervalHelper
             $timeComponents[] = $hours.' '.($hours == 1 ? Craft::t('app', 'hour') : Craft::t('app', 'hours'));
         }
 
-        if ($minutes || (!$showSeconds && !$days && !$hours)) {
+        if ($minutes) {
             $timeComponents[] = $minutes.' '.($minutes == 1 ? Craft::t('app', 'minute') : Craft::t('app', 'minutes'));
         }
 
-        if ($seconds || ($showSeconds && !$days && !$hours && !$minutes)) {
+        if ($seconds) {
             $timeComponents[] = $seconds.' '.($seconds == 1 ? Craft::t('app', 'second') : Craft::t('app', 'seconds'));
         }
 
@@ -115,7 +109,6 @@ class DateIntervalHelper
      * Returns the interval in a human-friendly string.
      *
      * @param DateInterval $dateInterval
-     * @param bool         $showSeconds
      *
      * @return string
      */
@@ -125,32 +118,32 @@ class DateIntervalHelper
 
         if ($dateInterval->y) {
             $timeComponents[] = $dateInterval->y.' '.
-                ($dateInterval->y > 1 ? Craft::t('app', 'years') : Craft::t('app', 'year'));
+                ($dateInterval->y == 1 ? Craft::t('app', 'year') : Craft::t('app', 'years'));
         }
 
         if ($dateInterval->m) {
             $timeComponents[] = $dateInterval->m.' '.
-                ($dateInterval->m > 1 ? Craft::t('app', 'months') : Craft::t('app', 'month'));
+                ($dateInterval->m == 1 ? Craft::t('app', 'month') : Craft::t('app', 'months'));
         }
 
         if ($dateInterval->d) {
             $timeComponents[] = $dateInterval->d.' '.
-                ($dateInterval->d > 1 ? Craft::t('app', 'days') : Craft::t('app', 'day'));
+                ($dateInterval->d == 1 ? Craft::t('app', 'day') : Craft::t('app', 'days'));
         }
 
         if ($dateInterval->h) {
             $timeComponents[] = $dateInterval->h.' '.
-                ($dateInterval->h > 1 ? Craft::t('app', 'hours') : Craft::t('app', 'hour'));
+                ($dateInterval->h == 1 ? Craft::t('app', 'hour') : Craft::t('app', 'hours'));
         }
 
         if ($dateInterval->i) {
             $timeComponents[] = $dateInterval->i.' '.
-                ($dateInterval->i > 1 ? Craft::t('app', 'minutes') : Craft::t('app', 'minute'));
+                ($dateInterval->i == 1 ? Craft::t('app', 'minute') : Craft::t('app', 'minutes'));
         }
 
         if ($dateInterval->s) {
             $timeComponents[] = $dateInterval->s.' '.
-                ($dateInterval->s > 1 ? Craft::t('app', 'seconds') : Craft::t('app', 'second'));
+                ($dateInterval->s == 1 ? Craft::t('app', 'second') : Craft::t('app', 'seconds'));
         }
 
         return implode(', ', $timeComponents);
@@ -196,6 +189,11 @@ class DateIntervalHelper
     {
         $interval = DateInterval::createFromDateString($intervalString);
 
-        return $interval->s != 0 || $interval->i != 0 || $interval->h != 0 || $interval->d != 0 || $interval->m != 0 || $interval->y != 0;
+        return $interval->s != 0 ||
+            $interval->i != 0 ||
+            $interval->h != 0 ||
+            $interval->d != 0 ||
+            $interval->m != 0 ||
+            $interval->y != 0;
     }
 }
