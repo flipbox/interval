@@ -1,6 +1,11 @@
 # Changelog
 All Notable changes to `flipboxdigital\interval` will be documented in this file
 
+## Unreleased
+### Changed
+- Removed the 'month' interval
+- Year interval is now calculated from 365 days vs 365.2416 days
+
 ## 1.0.0-beta.2 - 2017-8-3
 ### Changed
 - The default value behavior.  The field will always return a `\DateInterval` object

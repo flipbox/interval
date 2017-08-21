@@ -14,7 +14,7 @@ use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
 use craft\enums\PeriodType;
 use craft\helpers\ArrayHelper;
-use craft\helpers\DateTimeHelper;
+use flipbox\interval\helpers\DateIntervalHelper;
 use craft\helpers\StringHelper;
 use DateInterval;
 use yii\db\Schema;
@@ -99,7 +99,6 @@ class Interval extends Field implements PreviewableFieldInterface
                     PeriodType::Minutes => Craft::t('app', 'Minutes'),
                     PeriodType::Hours => Craft::t('app', 'Hours'),
                     PeriodType::Days => Craft::t('app', 'Days'),
-                    PeriodType::Months => Craft::t('app', 'Months'),
                     PeriodType::Years => Craft::t('app', 'Years'),
                 ]
             ]
@@ -120,7 +119,7 @@ class Interval extends Field implements PreviewableFieldInterface
     public function serializeValue($value, ElementInterface $element = null)
     {
         return parent::serializeValue(
-            DateTimeHelper::intervalToSeconds($value),
+            DateIntervalHelper::intervalToSeconds($value),
             $element
         );
     }
@@ -155,10 +154,10 @@ class Interval extends Field implements PreviewableFieldInterface
 
         // Fresh -> use default
         if ($this->isFresh($element)) {
-            DateTimeHelper::secondsToInterval($this->defaultAmount);
+            DateIntervalHelper::secondsToInterval($this->defaultAmount);
         }
 
-        return DateTimeHelper::secondsToInterval(0);
+        return DateIntervalHelper::secondsToInterval(0);
     }
 
     /**
@@ -178,20 +177,7 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     public function isEmpty($value): bool
     {
-        return parent::isEmpty($value) || DateTimeHelper::intervalToSeconds($value) === 0;
-    }
-
-    /**
-     * @param DateInterval $dateInterval
-     * @return DateInterval
-     */
-    private function toLargestDenominator(DateInterval $dateInterval)
-    {
-        return DateInterval::createFromDateString(
-            DateTimeHelper::secondsToHumanTimeDuration(
-                DateTimeHelper::intervalToSeconds($dateInterval)
-            )
-        );
+        return parent::isEmpty($value) || DateIntervalHelper::intervalToSeconds($value) === 0;
     }
 
     /**
@@ -200,13 +186,11 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     private function toHumanTimeDurationWithDefault(DateInterval $dateInterval): string
     {
-        if (DateTimeHelper::intervalToSeconds($dateInterval) === 0) {
-            return '0 '.$this->defaultPeriod;
+        if (DateIntervalHelper::intervalToSeconds($dateInterval) === 0) {
+            return '0 ' . $this->defaultPeriod;
         }
 
-        return DateTimeHelper::humanDurationFromInterval(
-            $this->toLargestDenominator($dateInterval)
-        );
+        return DateIntervalHelper::humanDurationFromInterval($dateInterval);
     }
 
     /**
@@ -222,7 +206,7 @@ class Interval extends Field implements PreviewableFieldInterface
             $seconds = $seconds * -1;
         }
 
-        $dateInterval = DateTimeHelper::secondsToInterval($seconds);
+        $dateInterval = DateIntervalHelper::secondsToInterval($seconds);
 
         if ($invert) {
             $dateInterval->invert = 1;
@@ -237,21 +221,26 @@ class Interval extends Field implements PreviewableFieldInterface
      */
     private function toDateIntervalFromHumanReadable(array $interval = ['amount' => 0, 'period' => ''])
     {
-
         $invert = false;
 
-        $period = ArrayHelper::getValue($interval, 'amount');
+        $amount = (int)ArrayHelper::getValue($interval, 'amount');
 
-        if ($period < 0) {
+        if ($amount < 0) {
             $invert = true;
-            $period = $period * -1;
+            $amount = $amount * -1;
         }
+
+        $period = ArrayHelper::getValue(
+            $interval,
+            'period',
+            $this->defaultPeriod
+        );
 
         $dateInterval = DateInterval::createFromDateString(
             StringHelper::toString(
                 [
-                    $period,
-                    ArrayHelper::getValue($interval, 'period')
+                    $amount,
+                    $period
                 ],
                 ' '
             )
