@@ -89,23 +89,23 @@ class DateIntervalHelper
         $timeComponents = [];
 
         if ($years) {
-            $timeComponents[] = $years.' '.($years == 1 ? Craft::t('interval', 'year') : Craft::t('interval', 'years'));
+            $timeComponents[] = $years.' '.($years == 1 ? Craft::t('app', 'year') : Craft::t('app', 'years'));
         }
 
         if ($days) {
-            $timeComponents[] = $days.' '.($days == 1 ? Craft::t('interval', 'day') : Craft::t('interval', 'days'));
+            $timeComponents[] = $days.' '.($days == 1 ? Craft::t('app', 'day') : Craft::t('app', 'days'));
         }
 
         if ($hours) {
-            $timeComponents[] = $hours.' '.($hours == 1 ? Craft::t('interval', 'hour') : Craft::t('interval', 'hours'));
+            $timeComponents[] = $hours.' '.($hours == 1 ? Craft::t('app', 'hour') : Craft::t('app', 'hours'));
         }
 
         if ($minutes || (!$showSeconds && !$days && !$hours)) {
-            $timeComponents[] = $minutes.' '.($minutes == 1 ? Craft::t('interval', 'minute') : Craft::t('interval', 'minutes'));
+            $timeComponents[] = $minutes.' '.($minutes == 1 ? Craft::t('app', 'minute') : Craft::t('app', 'minutes'));
         }
 
         if ($seconds || ($showSeconds && !$days && !$hours && !$minutes)) {
-            $timeComponents[] = $seconds.' '.($seconds == 1 ? Craft::t('interval', 'second') : Craft::t('interval', 'seconds'));
+            $timeComponents[] = $seconds.' '.($seconds == 1 ? Craft::t('app', 'second') : Craft::t('app', 'seconds'));
         }
 
         return implode(', ', $timeComponents);
@@ -119,42 +119,38 @@ class DateIntervalHelper
      *
      * @return string
      */
-    public static function humanDurationFromInterval(DateInterval $dateInterval, bool $showSeconds = true): string
+    public static function humanDurationFromInterval(DateInterval $dateInterval): string
     {
         $timeComponents = [];
 
         if ($dateInterval->y) {
-            $timeComponents[] = $dateInterval->y.' '.($dateInterval->y > 1 ? Craft::t('interval', 'years') : Craft::t('interval', 'year'));
+            $timeComponents[] = $dateInterval->y.' '.
+                ($dateInterval->y > 1 ? Craft::t('app', 'years') : Craft::t('app', 'year'));
         }
 
         if ($dateInterval->m) {
-            $timeComponents[] = $dateInterval->m.' '.($dateInterval->m > 1 ? Craft::t('interval', 'months') : Craft::t('interval', 'month'));
+            $timeComponents[] = $dateInterval->m.' '.
+                ($dateInterval->m > 1 ? Craft::t('app', 'months') : Craft::t('app', 'month'));
         }
 
         if ($dateInterval->d) {
-            $timeComponents[] = $dateInterval->d.' '.($dateInterval->d > 1 ? Craft::t('interval', 'days') : Craft::t('interval', 'day'));
+            $timeComponents[] = $dateInterval->d.' '.
+                ($dateInterval->d > 1 ? Craft::t('app', 'days') : Craft::t('app', 'day'));
         }
 
         if ($dateInterval->h) {
-            $timeComponents[] = $dateInterval->h.' '.($dateInterval->h > 1 ? Craft::t('interval', 'hours') : Craft::t('interval', 'hour'));
+            $timeComponents[] = $dateInterval->h.' '.
+                ($dateInterval->h > 1 ? Craft::t('app', 'hours') : Craft::t('app', 'hour'));
         }
 
-        $minutes = $dateInterval->i;
-
-        if (!$showSeconds) {
-            if ($minutes && round($dateInterval->s / 60)) {
-                $minutes++;
-            } else if (!$dateInterval->y && !$dateInterval->m && !$dateInterval->d && !$dateInterval->h && !$minutes) {
-                return Craft::t('interval', 'less than a minute');
-            }
+        if ($dateInterval->i) {
+            $timeComponents[] = $dateInterval->i.' '.
+                ($dateInterval->i > 1 ? Craft::t('app', 'minutes') : Craft::t('app', 'minute'));
         }
 
-        if ($minutes) {
-            $timeComponents[] = $minutes.' '.($minutes > 1 ? Craft::t('interval', 'minutes') : Craft::t('interval', 'minute'));
-        }
-
-        if ($showSeconds && $dateInterval->s) {
-            $timeComponents[] = $dateInterval->s.' '.($dateInterval->s > 1 ? Craft::t('interval', 'seconds') : Craft::t('interval', 'second'));
+        if ($dateInterval->s) {
+            $timeComponents[] = $dateInterval->s.' '.
+                ($dateInterval->s > 1 ? Craft::t('app', 'seconds') : Craft::t('app', 'second'));
         }
 
         return implode(', ', $timeComponents);
