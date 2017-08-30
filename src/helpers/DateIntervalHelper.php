@@ -116,7 +116,7 @@ class DateIntervalHelper
     {
         $timeComponents = [];
 
-        if($dateInterval->invert) {
+        if ($dateInterval->invert) {
             $timeComponents[] = '-';
         }
 
