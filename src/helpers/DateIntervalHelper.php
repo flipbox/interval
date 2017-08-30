@@ -116,6 +116,10 @@ class DateIntervalHelper
     {
         $timeComponents = [];
 
+        if($dateInterval->invert) {
+            $timeComponents[] = '-';
+        }
+
         if ($dateInterval->y) {
             $timeComponents[] = $dateInterval->y.' '.
                 ($dateInterval->y == 1 ? Craft::t('app', 'year') : Craft::t('app', 'years'));
@@ -146,7 +150,7 @@ class DateIntervalHelper
                 ($dateInterval->s == 1 ? Craft::t('app', 'second') : Craft::t('app', 'seconds'));
         }
 
-        return implode(', ', $timeComponents);
+        return implode('', $timeComponents);
     }
 
     /**

@@ -1,6 +1,10 @@
 # Changelog
 All Notable changes to `flipboxdigital\interval` will be documented in this file
 
+## Unreleased
+### Fixed
+- Issue where human duration string would not return negative if DateInterval is inverted
+
 ## 1.0.0-beta.3 - 2017-08-21
 ### Changed
 - The 'year' interval is now calculated from 365 days vs 365.2416 days
