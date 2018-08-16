@@ -1,6 +1,10 @@
 # Changelog
 All Notable changes to `flipboxdigital\interval` will be documented in this file
 
+## Unreleased
+### Fixed
+- Issue where label was not getting populated correctly
+
 ## 1.0.0-beta.4 - 2017-08-30
 ### Fixed
 - Issue where human duration string would not return negative if DateInterval is inverted
